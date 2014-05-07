@@ -20,7 +20,11 @@ public:
 	OFCalculator() :rawWindow("Raw Video"), opticalFlowWindow("Optical Flow Window"), ready_to_process(false) {};
 	void initCapture(std::string file_name);
 	void update();
+	void calcFlow();
 	void draw();
+
+	void filterResults();
+	void segmentResults(bool draw = false);
 
 	vector<Point2f> &getResult() {
 		return points1;
@@ -42,6 +46,8 @@ private:
 
 	vector<Point2f> points1;
 	vector<Point2f> points2;
+	vector<Point2f> points_to_segment;
+
 	vector<uchar> status;
 	vector<float> err;
 

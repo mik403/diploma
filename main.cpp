@@ -10,7 +10,7 @@ int main() {
 
 		flow.update();
 		flow.draw();
-
+ 
 		char keyPressed = waitKey(10);
 
 		if (keyPressed == 27) {
