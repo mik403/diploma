@@ -1,4 +1,6 @@
 #include "OFCalculator.h"
+#include "Segmentator.h"
+
 
 void OFCalculator::initCapture(std::string file_name) {
 	cap.open(file_name);
@@ -12,7 +14,7 @@ void OFCalculator::initCapture(std::string file_name) {
 
 	opticalFlow = Mat(cap.get(CV_CAP_PROP_FRAME_HEIGHT),
 		cap.get(CV_CAP_PROP_FRAME_HEIGHT), CV_32FC3);
-	winSize.height = winSize.width = 31;
+	winSize.height = winSize.width = 15;
 
 	needToInit = true;
 }
@@ -20,7 +22,18 @@ void OFCalculator::initCapture(std::string file_name) {
 void OFCalculator::update() {
 	calcFlow();
 	filterResults();
-	segmentResults(true);
+  
+	Segmentator seg;
+	auto_ptr<Mat> centers = seg.makeSegmentation(getResult());
+
+	if (centers.get() == NULL) {
+		return;
+	}
+
+	for (int i = 0; i < centers->rows; i++) {
+			circle(rgbFrames, Point(centers->at<float>(i, 0), centers->at<float>(i, 1)), 10, Scalar(10, 100, 230));
+	}
+
 }
 
 void OFCalculator::calcFlow() {
@@ -59,7 +72,7 @@ void OFCalculator::filterResults() {
 
 	int i, k;
 
-	points_to_segment.clear();
+	filtered_points.clear();
 
 	for (i = k = 0; i < points2.size(); i++) {
 
@@ -68,38 +81,8 @@ void OFCalculator::filterResults() {
 			continue;
 		}
 
-		points_to_segment.push_back(points1[i]);
+		filtered_points.push_back(points1[i]);
 	}
-}
-
-void OFCalculator::segmentResults(bool draw) {
-
-	int clusterCount = 5;
-
-	if (points_to_segment.empty() || points_to_segment.size() < clusterCount) {
-		return;
-	}
-
-
-	Mat points(points_to_segment.size(), 2, CV_32F, Scalar(100));
-	Mat labels;
-	Mat centers(clusterCount, 1, points.type());
-
-	for (int i = 0; i < points.rows; i++)
-	{
-		points.at<float>(i, 0) = points_to_segment.at(i).x;
-		points.at<float>(i, 1) = points_to_segment.at(i).y;
-	}
-
-
-	kmeans(points, clusterCount, labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0), 30, KMEANS_PP_CENTERS, centers);
-
-	if (draw) {
-		for (int i = 0; i < clusterCount; i++) {
-			circle(rgbFrames, Point(centers.at<float>(i, 0), centers.at<float>(i, 1)), 10, Scalar(10, 100, 230));
-		}
-	}
-
 }
 
 void OFCalculator::draw() {

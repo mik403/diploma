@@ -1,0 +1,4 @@
+1) Claster tracking
+2) Analyze segmentation labeling result. Maybe it will be usefull to work not only woth cluster centers
+3) Refactoring - divide each stage into single pipeline
+4) Play with parameters - optical flow, segmentation, etc.

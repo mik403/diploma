@@ -24,10 +24,9 @@ public:
 	void draw();
 
 	void filterResults();
-	void segmentResults(bool draw = false);
 
 	vector<Point2f> &getResult() {
-		return points1;
+		return filtered_points;
 	}
 
 private:
@@ -46,7 +45,7 @@ private:
 
 	vector<Point2f> points1;
 	vector<Point2f> points2;
-	vector<Point2f> points_to_segment;
+	vector<Point2f> filtered_points;
 
 	vector<uchar> status;
 	vector<float> err;
