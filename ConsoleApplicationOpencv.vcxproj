@@ -87,12 +87,15 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="OFCalculator.h" />
+    <ClInclude Include="PrimPointTracker.h" />
     <ClInclude Include="Segmentator.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OFCalculator.cpp" />
     <ClCompile Include="Segmentator.cpp" />

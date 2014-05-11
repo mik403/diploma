@@ -15,8 +15,12 @@ using namespace std;
 class Segmentator {
 public:
 
-	auto_ptr<Mat> makeSegmentation(vector<Point2f> &points_to_segment);
-
+	void makeSegmentation(vector<Point2f> &points_to_segment);
+	auto_ptr<Mat> getCenters() { return res_centers; }
+	auto_ptr<Mat> getLabels() { return res_labels; }
 private:
 		const int clusterCount = 10;
+		
+		auto_ptr<Mat> res_centers;
+		auto_ptr<Mat> res_labels;
 };

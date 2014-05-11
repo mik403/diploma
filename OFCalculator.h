@@ -17,10 +17,10 @@ using namespace std;
 class OFCalculator {
 public:
 
-	OFCalculator() :rawWindow("Raw Video"), opticalFlowWindow("Optical Flow Window"), ready_to_process(false) {};
-	void initCapture(std::string file_name);
-	void update();
-	void calcFlow();
+	OFCalculator() : ready_to_process(false) {};
+	
+	void init();
+	void calcFlow(Mat &rgbFrames);
 	void draw();
 
 	void filterResults();
@@ -33,13 +33,8 @@ private:
 
 	bool ready_to_process;
 
-	VideoCapture cap;
 
-	string rawWindow;
-	string opticalFlowWindow;
-
-	Mat frame, grayFrames, rgbFrames, prevGrayFrame; 
-	Mat opticalFlow;
+	Mat frame, grayFrames, prevGrayFrame; 
 
 	bool needToInit;
 

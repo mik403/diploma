@@ -1,15 +1,15 @@
-#include "OFCalculator.h"
+#include "Engine.h"
 
 int main() {
 
-	OFCalculator flow;
+	Engine flow;
 
 	flow.initCapture("test_video.mp4");
 
 	while (1) {
 
 		flow.update();
-		flow.draw();
+	 	flow.draw();
  
 		char keyPressed = waitKey(10);
 

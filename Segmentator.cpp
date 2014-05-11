@@ -1,20 +1,17 @@
 #include "Segmentator.h"
 
-auto_ptr<Mat> Segmentator::makeSegmentation(vector<Point2f> &points_to_segment) {
+void Segmentator::makeSegmentation(vector<Point2f> &points_to_segment) {
  
 
-	auto_ptr<Mat> res;
-
 	if (points_to_segment.empty() || points_to_segment.size() < clusterCount) {
-		return res;
+		return ;
 	}
 
 
 	Mat points(points_to_segment.size(), 2, CV_32F, Scalar(100));
-	Mat labels;
 	 
-	res.reset(new Mat(clusterCount, 1, points.type()));
-	
+	res_centers.reset(new Mat(clusterCount, 1, points.type()));
+	res_labels.reset(new Mat());
 
 	for (int i = 0; i < points.rows; i++)
 	{
@@ -23,8 +20,6 @@ auto_ptr<Mat> Segmentator::makeSegmentation(vector<Point2f> &points_to_segment) 
 	}
 
 
-	kmeans(points, clusterCount, labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0), 30, KMEANS_PP_CENTERS, *res);
-
-	return res;
-
+	kmeans(points, clusterCount, *res_labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0), 30, KMEANS_PP_CENTERS, *res_centers);
+	
 }
