@@ -19,7 +19,7 @@ public:
 	auto_ptr<Mat> getCenters() { return res_centers; }
 	auto_ptr<Mat> getLabels() { return res_labels; }
 private:
-		const int clusterCount = 10;
+		const int clusterCount = 25;
 		
 		auto_ptr<Mat> res_centers;
 		auto_ptr<Mat> res_labels;

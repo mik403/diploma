@@ -6,6 +6,7 @@ using namespace cv;
 
 class PrimPointTracker {
 
+public:
 	enum TrStatus{
 		INIT = 0,
 		TRACK,
@@ -13,43 +14,28 @@ class PrimPointTracker {
 	};
 
 	PrimPointTracker() {
-		status = INIT;
-		lost_fr_count = 0;
+		reset();
 	}
 
-	void update(Point2f _p) { 
+	void update(Point2f _p);
+	void nextFrame();
+	void reset();
+
+	inline Point2f getPoint() { return tracked_point; }
+	inline bool isTracked() { return status == TRACK; }
 	
-		if (status == INIT) {
-			tracked_point = _p;
-			lost_fr_count = 0;
-		}
-		else {
-
-			int curr_dist = sqrt(_p.x* tracked_point.x + _p.y* tracked_point.y);
-
-			if (curr_dist > radius) {
-				
-				lost_fr_count++;
-				if (lost_fr_count >= max_lost_frames) {
-					status = LOST;
-				} 
-
-			}
-			else {
-				tracked_point = _p;
-			}
-
-		}
-
-	}
+	
 
 private:
 
 	TrStatus status;
+	bool updated_on_curr_frame;
 	int lost_fr_count;
+
+	int min_dist;
 
 	Point2f tracked_point;
 
-	const int max_lost_frames = 5;
-	const int radius = 30;
+	const int max_lost_frames = 10;
+	const int radius = 20;
 };

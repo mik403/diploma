@@ -19,7 +19,7 @@ void OFCalculator::calcFlow(Mat &rgbFrames) {
 	points1.clear();
 	grayFrames.copyTo(prevGrayFrame);
 
-	TermCriteria termcrit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03);
+	TermCriteria termcrit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 0.03);
 
 
 	//frame.copyTo(rgbFrames);

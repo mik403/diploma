@@ -10,6 +10,7 @@
 
 #include "OFCalculator.h"
 #include "Segmentator.h"
+#include "PrimPointTracker.h"
 
 using namespace cv;
 
@@ -21,14 +22,18 @@ public:
 
 	void update();
 	void draw();
-
+	void drawTrackers();
+	void resetTrackers();
 private:
 
 	Mat rgbFrames;
 	VideoCapture cap;
-
-	OFCalculator flow;
 	
+	OFCalculator flow;
+	Segmentator seg;
+
+	PrimPointTracker p_trackers[25];
+
 	string rawWindow;
 };
 

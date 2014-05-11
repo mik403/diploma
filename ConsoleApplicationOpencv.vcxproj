@@ -98,6 +98,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OFCalculator.cpp" />
+    <ClCompile Include="PrimPointTracker.cpp" />
     <ClCompile Include="Segmentator.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

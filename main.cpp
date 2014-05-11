@@ -2,14 +2,14 @@
 
 int main() {
 
-	Engine flow;
+	Engine main_engine;
 
-	flow.initCapture("test_video.mp4");
+	main_engine.initCapture("test_video.mp4");
 
 	while (1) {
 
-		flow.update();
-	 	flow.draw();
+		main_engine.update();
+		main_engine.draw();
  
 		char keyPressed = waitKey(10);
 
@@ -18,6 +18,9 @@ int main() {
 		}
 		else if (keyPressed == 'p') {
 			waitKey(1000000000);
+		}
+		else if (keyPressed == 'r') {
+			main_engine.resetTrackers();
 		}
 
 	}
