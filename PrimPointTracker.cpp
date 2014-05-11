@@ -1,14 +1,17 @@
 #include "PrimPointTracker.h"
 
 
-void PrimPointTracker::update(Point2f _p) {
+bool PrimPointTracker::update(Point2f _p) {
 
-	if (status == LOST) { //one-way tracker
-		return;
-	}
-	else if (status == INIT) {
+	//if (status == LOST) { //one-way tracker
+	//	return;
+	//}
+	//else 
+	if (status == INIT || status == LOST) {
+		//prev_tracked_point = tracked_point;
 		tracked_point = _p;
 		lost_fr_count = 0;
+		prev_status = status;
 		status = TRACK;
 	}
 	else {
@@ -17,12 +20,17 @@ void PrimPointTracker::update(Point2f _p) {
 
 		if (curr_dist < radius && curr_dist < min_dist) {
 			min_dist = curr_dist;
+			prev_tracked_point = tracked_point;
 			tracked_point = _p;
 			updated_on_curr_frame = true;
+			
+			prev_status = status;
+			status = TRACK;
 		}
 
 	}
 
+	return updated_on_curr_frame;
 }
 
 void PrimPointTracker::nextFrame() {
@@ -30,11 +38,13 @@ void PrimPointTracker::nextFrame() {
 		lost_fr_count++;
 
 		if (lost_fr_count >= max_lost_frames) {
+			prev_status = status;
 			status = LOST;
 		}
 	}
 	else {
 		lost_fr_count = 0;
+		
 	}
 
 	updated_on_curr_frame = false;

@@ -14,6 +14,8 @@
 
 using namespace cv;
 
+#define TRACKERS_N 10
+
 class Engine {
 public:
 	Engine() : rawWindow("Raw Video") {}
@@ -32,7 +34,7 @@ private:
 	OFCalculator flow;
 	Segmentator seg;
 
-	PrimPointTracker p_trackers[25];
+	PrimPointTracker p_trackers[TRACKERS_N];
 
 	string rawWindow;
 };

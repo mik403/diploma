@@ -52,6 +52,12 @@ void OFCalculator::filterResults() {
 			continue;
 		}
 
+		//specfic image limits
+		if (points1[i].x < 0.2*grayFrames.cols || points1[i].x > 0.85*grayFrames.cols ||
+			points1[i].y < 0.2*grayFrames.rows || points1[i].y > 0.85*grayFrames.rows) {
+			continue;
+		}
+
 		filtered_points.push_back(points1[i]);
 	}
 }
