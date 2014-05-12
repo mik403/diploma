@@ -11,6 +11,7 @@
 #include "OFCalculator.h"
 #include "Segmentator.h"
 #include "PrimPointTracker.h"
+#include "ShiftTracker.h"
 
 using namespace cv;
 
@@ -18,7 +19,7 @@ using namespace cv;
 
 class Engine {
 public:
-	Engine() : rawWindow("Raw Video") {}
+	Engine() : rawWindow("Raw Video"), init_tracker(false) {}
 
 	void initCapture(std::string file_name);
 
@@ -37,5 +38,8 @@ private:
 	PrimPointTracker p_trackers[TRACKERS_N];
 
 	string rawWindow;
+
+	ShiftTracker test_tracker[TRACKERS_N];
+	bool init_tracker;
 };
 

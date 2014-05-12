@@ -8,9 +8,10 @@ bool PrimPointTracker::update(Point2f _p) {
 	//}
 	//else 
 	if (status == INIT || status == LOST) {
-		//prev_tracked_point = tracked_point;
+	 
 		tracked_point = _p;
 		lost_fr_count = 0;
+		accum_score.x = accum_score.y = 0;
 		prev_status = status;
 		status = TRACK;
 	}
@@ -20,8 +21,7 @@ bool PrimPointTracker::update(Point2f _p) {
 
 		if (curr_dist < radius && curr_dist < min_dist) {
 			min_dist = curr_dist;
-			prev_tracked_point = tracked_point;
-			tracked_point = _p;
+			prev_tracked_point = _p;
 			updated_on_curr_frame = true;
 			
 			prev_status = status;
@@ -43,8 +43,13 @@ void PrimPointTracker::nextFrame() {
 		}
 	}
 	else {
+		//swap it
+		Point2f p = tracked_point;
+		tracked_point = prev_tracked_point;
+		prev_tracked_point = p;
+		accum_score.x = fabs(prev_tracked_point.x - tracked_point.x);
+		accum_score.y = fabs(prev_tracked_point.y - tracked_point.y);
 		lost_fr_count = 0;
-		
 	}
 
 	updated_on_curr_frame = false;

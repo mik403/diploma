@@ -26,7 +26,7 @@ public:
 	
 	inline bool isTracked() { return status == TRACK; }
 	inline bool isPrevTracked() { return prev_status == TRACK; }
-	
+	inline float getScore() { return accum_score.x != 0 ? accum_score.y / accum_score.x : accum_score.x; }
 private:
 
 	TrStatus status;
@@ -35,10 +35,10 @@ private:
 	int lost_fr_count;
 
 	int min_dist;
-
+	Point2f accum_score;
 	Point2f tracked_point;
 	Point2f prev_tracked_point;
 
 	const int max_lost_frames = 5;
-	const int radius = 30;
+	const int radius = 60;
 };

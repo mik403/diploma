@@ -29,40 +29,55 @@ void Engine::update() {
 	seg.makeSegmentation(filtered_points);
 
 	auto_ptr<Mat> centers = seg.getCenters();
-	bool tracked_mask[TRACKERS_N];
-	memset(&tracked_mask, false, TRACKERS_N);
+	
 	if (centers.get() == NULL) {
 		return;
 	}
 
 
-	for (int i = 0; i < TRACKERS_N; ++i) {
-
-		if (tracked_mask[i]) {
-			continue;
+	if (init_tracker) {
+		for (int i = 0; i < TRACKERS_N; ++i) {
+			test_tracker[i].init(rgbFrames, Point2f(centers->at<float>(i, 0), centers->at<float>(i, 1)));
 		}
-
-		Point2f curr_c(centers->at<float>(i, 0), centers->at<float>(i, 1));
-		tracked_mask[i] = p_trackers[i].update(curr_c);
+		init_tracker = false;
 	}
 
+
 	for (int i = 0; i < TRACKERS_N; ++i) {
-		for (int j = 0; j < centers->rows; ++j) {
-
-			if (tracked_mask[j]) {
-				continue;
-			}
-
-			Point2f curr_c(centers->at<float>(j, 0), centers->at<float>(j, 1));
-			tracked_mask[j] = p_trackers[i].update(curr_c);
-		}
-
-		p_trackers[i].nextFrame();
-
+			test_tracker[i].update(rgbFrames);
 	}
-	cout << "frame+" << rand()<< endl;
 
-	drawTrackers();
+
+	//bool tracked_mask[TRACKERS_N];
+	//memset(&tracked_mask, false, TRACKERS_N);
+
+	//for (int i = 0; i < TRACKERS_N; ++i) {
+
+	//	if (tracked_mask[i]) {
+	//		continue;
+	//	}
+
+	//	Point2f curr_c(centers->at<float>(i, 0), centers->at<float>(i, 1));
+	//	tracked_mask[i] = p_trackers[i].update(curr_c);
+	//}
+
+	//for (int i = 0; i < TRACKERS_N; ++i) {
+	//	for (int j = 0; j < centers->rows; ++j) {
+
+	//		if (tracked_mask[j]) {
+	//			continue;
+	//		}
+
+	//		Point2f curr_c(centers->at<float>(j, 0), centers->at<float>(j, 1));
+	//		tracked_mask[j] = p_trackers[i].update(curr_c);
+	//	}
+
+	//	p_trackers[i].nextFrame();
+
+	//}
+	//cout << "frame+" << rand()<< endl;
+
+	//drawTrackers();
 
 	//auto_ptr<Mat> labels = seg.getLabels();
 
@@ -71,9 +86,9 @@ void Engine::update() {
 	//		0);
 	//}
 
-	//for (int i = 0; i < centers->rows; i++) {
-	//	circle(rgbFrames, Point(centers->at<float>(i, 0), centers->at<float>(i, 1)), 10, Scalar(10, 100, 230));
-	//}
+	for (int i = 0; i < centers->rows; i++) {
+		circle(rgbFrames, Point(centers->at<float>(i, 0), centers->at<float>(i, 1)), 10, Scalar(10, 100, 230), 2);
+	}
 
 	cv::imshow(rawWindow, rgbFrames);
 }
@@ -92,11 +107,18 @@ void Engine::drawTrackers() {
 
 	for (int i = 0; i < TRACKERS_N; ++i) {
 		if (p_trackers[i].isTracked()) {
-			circle(rgbFrames, p_trackers[i].getPoint(), 10, Scalar(10, 100, 230), 3);
-			circle(rgbFrames, p_trackers[i].getPoint(), 30, Scalar(10, 100, 230), 1);
+			
 			
 			if (p_trackers[i].isPrevTracked()) {
+
+				Scalar curr_color = p_trackers[i].getScore() < 1.0f && p_trackers[i].getScore() > 0.1f ? Scalar(10, 100, 230) : Scalar(0, 0, 0);
+
+				circle(rgbFrames, p_trackers[i].getPoint(), 10, curr_color, 3);
+				circle(rgbFrames, p_trackers[i].getPoint(), 60, Scalar(10, 100, 230), 1);
+
 				line(rgbFrames, p_trackers[i].getPoint(), p_trackers[i].getPrevPoint(), Scalar(0, 0, 255), 2);
+				//putText(rgbFrames, std::to_string(p_trackers[i].getScore()), p_trackers[i].getPoint(), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 0), 3);
+			 
 			}
 
 		}
@@ -104,6 +126,9 @@ void Engine::drawTrackers() {
 }
 
 void Engine::resetTrackers() {
+	
+	init_tracker = true;
+
 	for (int i = 0; i < TRACKERS_N; ++i) {
 		p_trackers[i].reset();
 	}

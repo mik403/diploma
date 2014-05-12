@@ -11,7 +11,7 @@ int main() {
 		main_engine.update();
 		main_engine.draw();
  
-		char keyPressed = waitKey(10);
+		char keyPressed = waitKey(20);
 
 		if (keyPressed == 27) {
 			break;
