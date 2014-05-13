@@ -51,12 +51,12 @@ void OFCalculator::filterResults() {
 		if (fabs(points1[i].x - points2[i].x) <= 1) {
 			continue;
 		}
-
+		
 		//specfic image limits
-		if (points1[i].x < 0.2*grayFrames.cols || points1[i].x > 0.85*grayFrames.cols ||
-			points1[i].y < 0.2*grayFrames.rows || points1[i].y > 0.85*grayFrames.rows) {
-			continue;
-		}
+		//if (points1[i].x < 0.2*grayFrames.cols || points1[i].x > 0.85*grayFrames.cols ||
+		//	points1[i].y < 0.2*grayFrames.rows || points1[i].y > 0.85*grayFrames.rows) {
+		//	continue;
+		//}
 
 		filtered_points.push_back(points1[i]);
 	}

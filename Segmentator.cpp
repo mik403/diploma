@@ -3,14 +3,14 @@
 void Segmentator::makeSegmentation(vector<Point2f> &points_to_segment) {
  
 
-	if (points_to_segment.empty() || points_to_segment.size() < clusterCount) {
+	if (points_to_segment.empty() || points_to_segment.size() < CLUSTER_COUNT) {
 		return ;
 	}
 
 
 	Mat points(points_to_segment.size(), 2, CV_32F, Scalar(100));
 	 
-	res_centers.reset(new Mat(clusterCount, 1, points.type()));
+	res_centers.reset(new Mat(CLUSTER_COUNT, 1, points.type()));
 	res_labels.reset(new Mat());
 
 	for (int i = 0; i < points.rows; i++)
@@ -20,6 +20,11 @@ void Segmentator::makeSegmentation(vector<Point2f> &points_to_segment) {
 	}
 
 
-	kmeans(points, clusterCount, *res_labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0), 30, KMEANS_PP_CENTERS, *res_centers);
+	kmeans(points, CLUSTER_COUNT, *res_labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0), 30, KMEANS_PP_CENTERS, *res_centers);
 	
+	//fill point count for each cluster
+	points_count.clear();
+	for (int i = 0; i < res_labels->rows; ++i) {
+		points_count[res_labels->at<int>(i, 0)]++;
+	}
 }

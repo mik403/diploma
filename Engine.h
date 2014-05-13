@@ -41,5 +41,7 @@ private:
 
 	ShiftTracker test_tracker[TRACKERS_N];
 	bool init_tracker;
+	bool success_detection;
+	int frame_count;
 };
 
