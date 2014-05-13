@@ -19,7 +19,6 @@ void Segmentator::makeSegmentation(vector<Point2f> &points_to_segment) {
 		points.at<float>(i, 1) = points_to_segment.at(i).y;
 	}
 
-
 	kmeans(points, CLUSTER_COUNT, *res_labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0), 30, KMEANS_PP_CENTERS, *res_centers);
 	
 	//fill point count for each cluster

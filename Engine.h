@@ -29,19 +29,23 @@ public:
 	void resetTrackers();
 private:
 
+	void analyzeDetection(int det_i, Point2f &curr_center);
+
 	Mat rgbFrames;
 	VideoCapture cap;
 	
 	OFCalculator flow;
 	Segmentator seg;
 
-	PrimPointTracker p_trackers[TRACKERS_N];
-
 	string rawWindow;
 
 	ShiftTracker test_tracker[TRACKERS_N];
+	Point2f initial_tracker_positions[TRACKERS_N];
+
 	bool init_tracker;
 	bool success_detection;
 	int frame_count;
+
+	const int tact_lenght = 10;
 };
 

@@ -33,7 +33,6 @@ private:
 
 	bool ready_to_process;
 
-
 	Mat frame, grayFrames, prevGrayFrame; 
 
 	bool needToInit;

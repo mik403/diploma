@@ -13,13 +13,13 @@ int main() {
  
 		char keyPressed = waitKey(20);
 
-		if (keyPressed == 27) {
+		if (keyPressed == 27) { //exit
 			break;
 		}
-		else if (keyPressed == 'p') {
+		else if (keyPressed == 'p') { //pause
 			waitKey(1000000000);
 		}
-		else if (keyPressed == 'r') {
+		else if (keyPressed == 'r') { //reset
 			main_engine.resetTrackers();
 		}
 

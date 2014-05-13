@@ -17,7 +17,8 @@ public:
 	
 	inline bool isLost() { return lost; }
 	inline Point2f getScore() { return score; }
-
+	inline Point2f getDetCenter() { return Point2f(track_window.x + track_window.width / 2, 
+												   track_window.y + track_window.height / 2); }
 private:
 	
 	int id;

@@ -66,7 +66,7 @@ void ShiftTracker::update(Mat &frame) {
 	} else {
 
 		rectangle(frame, track_window, Scalar(0, 255, 0), 2);
-		putText(frame, std::to_string(id), cvPoint(track_window.x + track_window.width / 2, track_window.y + track_window.height / 2), CV_FONT_HERSHEY_SIMPLEX, 1.0f, Scalar(0, 255, 0), 2);
+		putText(frame, std::to_string(id), getDetCenter(), CV_FONT_HERSHEY_SIMPLEX, 1.0f, Scalar(0, 255, 0), 2);
 
 		lost = false;
 

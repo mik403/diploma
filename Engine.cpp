@@ -15,15 +15,41 @@ void Engine::initCapture(std::string file_name) {
 	namedWindow(rawWindow, CV_WINDOW_AUTOSIZE);
 }
 
+void Engine::analyzeDetection(int det_i, Point2f &curr_center) {
+
+	if (!test_tracker[det_i].isLost()) {
+		float score_ratio = test_tracker[det_i].getScore().y / abs(test_tracker[det_i].getScore().x);
+
+		cout << det_i << " score: " << test_tracker[det_i].getScore().x << " " << test_tracker[det_i].getScore().y << " " << score_ratio << endl;
+
+		//first, check final position vector, otherwice check scores
+		if (initial_tracker_positions[det_i].x > 0.6*rgbFrames.cols &&
+			initial_tracker_positions[det_i].x < test_tracker[det_i].getDetCenter().x) {}
+		else if (score_ratio > -0.15 && score_ratio < 0.15 && abs(test_tracker[det_i].getScore().x) > 30) {
+			cout << endl << "SUCCES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+			success_detection = true;
+		}
+	}
+
+	if (curr_center.x < 0.2*rgbFrames.cols || curr_center.x > 0.85*rgbFrames.cols ||
+		curr_center.y < 0.2*rgbFrames.rows || curr_center.y > 0.85*rgbFrames.rows) {
+		test_tracker[det_i].deactivate();
+	} else {
+		test_tracker[det_i].init(rgbFrames, curr_center);
+	}
+}
+
+
 void Engine::update() {
 
 	frame_count++;
 
+	//analyze each 3 frame because of high video framerate
 	cap >> rgbFrames;
 	cap >> rgbFrames;
 	cap >> rgbFrames;
 
-	//calc flow point and filter it 
+	//calc flow points and filter it 
 	flow.calcFlow(rgbFrames);
 	flow.filterResults();
 
@@ -34,12 +60,12 @@ void Engine::update() {
 
 	auto_ptr<Mat> centers = seg.getCenters();
 	map<int, int > points_count = seg.getPointsCount();
+
 	if (centers.get() == NULL) {
 		return;
 	}
 
-
-	if (frame_count % 10 == 0) {
+	if (frame_count % tact_lenght == 0) {
 		resetTrackers();
 	}
 
@@ -49,41 +75,9 @@ void Engine::update() {
 		cout << "Tracker scores:" << endl;
 
 		for (int i = 0; i < TRACKERS_N; ++i) {
-
-			if (!test_tracker[i].isLost()) {
-				float score_ratio = test_tracker[i].getScore().y / abs(test_tracker[i].getScore().x);
-				
-				cout << i << " score: " << test_tracker[i].getScore().x << " " << test_tracker[i].getScore().y << " " <<score_ratio << endl;
-				
-				if (score_ratio > -0.05 && score_ratio < 0.05 && abs(test_tracker[i].getScore().x) > 30) {
-					
-					cout << endl << "SUCCES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-					success_detection = true;
-
-
-				}
-				
-				
-				//if (test_tracker[i].getScore().x > 2000 && test_tracker[i].getScore().x < 3000 &&
-				//	test_tracker[i].getScore().y < 1200) {
-				//	
-				//	cout << endl << "SUCCES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-				//	success_detection = true;
-
-
-				//}
-
-			}
-
 			Point2f curr_center(centers->at<float>(i, 0), centers->at<float>(i, 1));
-
-			if (curr_center.x < 0.2*rgbFrames.cols || curr_center.x > 0.85*rgbFrames.cols ||
-				curr_center.y < 0.2*rgbFrames.rows || curr_center.y > 0.85*rgbFrames.rows) {
-				test_tracker[i].deactivate();
-			}
-			else {
-				test_tracker[i].init(rgbFrames, curr_center);
-			}
+			analyzeDetection(i, curr_center);
+			initial_tracker_positions[i] = curr_center;
 		}
 
 		init_tracker = false;
@@ -99,36 +93,14 @@ void Engine::update() {
 			Scalar(0, 255, 255), 10);
 	}
 
-	//bool tracked_mask[TRACKERS_N];
-	//memset(&tracked_mask, false, TRACKERS_N);
+	for (int i = 0; i < centers->rows; i++) {
+		circle(rgbFrames, Point(centers->at<float>(i, 0), centers->at<float>(i, 1)), 10, Scalar(10, 100, 230), 2);
+	}
 
-	//for (int i = 0; i < TRACKERS_N; ++i) {
 
-	//	if (tracked_mask[i]) {
-	//		continue;
-	//	}
+}
 
-	//	Point2f curr_c(centers->at<float>(i, 0), centers->at<float>(i, 1));
-	//	tracked_mask[i] = p_trackers[i].update(curr_c);
-	//}
-
-	//for (int i = 0; i < TRACKERS_N; ++i) {
-	//	for (int j = 0; j < centers->rows; ++j) {
-
-	//		if (tracked_mask[j]) {
-	//			continue;
-	//		}
-
-	//		Point2f curr_c(centers->at<float>(j, 0), centers->at<float>(j, 1));
-	//		tracked_mask[j] = p_trackers[i].update(curr_c);
-	//	}
-
-	//	p_trackers[i].nextFrame();
-
-	//}
-	//cout << "frame+" << rand()<< endl;
-
-	//drawTrackers();
+void Engine::draw() {
 
 	//auto_ptr<Mat> labels = seg.getLabels();
 
@@ -137,48 +109,22 @@ void Engine::update() {
 	//		0);
 	//}
 
-	for (int i = 0; i < centers->rows; i++) {
-		circle(rgbFrames, Point(centers->at<float>(i, 0), centers->at<float>(i, 1)), 10, Scalar(10, 100, 230), 2);
-	}
-
 	line(rgbFrames, Point(0, 0.2 * rgbFrames.rows), Point(rgbFrames.cols, 0.2 * rgbFrames.rows), Scalar(255, 0, 0), 5);
 	line(rgbFrames, Point(0, rgbFrames.rows - 0.2 * rgbFrames.rows), Point(rgbFrames.cols, rgbFrames.rows - 0.2 * rgbFrames.rows), Scalar(255, 0, 0), 5);
 
 	line(rgbFrames, Point(0.2*rgbFrames.cols, 0), Point(0.2*rgbFrames.cols, rgbFrames.rows), Scalar(255, 0, 0), 5);
 	line(rgbFrames, Point(0.85*rgbFrames.cols, 0), Point(0.85*rgbFrames.cols, rgbFrames.rows), Scalar(255, 0, 0), 5);
 
-
 	cv::imshow(rawWindow, rgbFrames);
-}
-
-void Engine::draw() {
-
 }
 
 void Engine::drawTrackers() {
 
-	for (int i = 0; i < TRACKERS_N; ++i) {
-		if (p_trackers[i].isTracked()) {
-
-
-			if (p_trackers[i].isPrevTracked()) {
-
-				Scalar curr_color = p_trackers[i].getScore() < 1.0f && p_trackers[i].getScore() > 0.1f ? Scalar(10, 100, 230) : Scalar(0, 0, 0);
-
-				circle(rgbFrames, p_trackers[i].getPoint(), 10, curr_color, 3);
-				circle(rgbFrames, p_trackers[i].getPoint(), 60, Scalar(10, 100, 230), 1);
-
-				line(rgbFrames, p_trackers[i].getPoint(), p_trackers[i].getPrevPoint(), Scalar(0, 0, 255), 2);
-			}
-
-		}
-	}
 }
 
 void Engine::resetTrackers() {
 
 	init_tracker = true;
-
 	for (int i = 0; i < TRACKERS_N; ++i) {
 		test_tracker[i].setId(i);
 	}
