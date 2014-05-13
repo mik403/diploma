@@ -18,7 +18,6 @@ public:
 	inline bool isLost() { return lost; }
 	inline Point2f getScore() { return score; }
 
-	
 private:
 	
 	int id;
@@ -33,4 +32,5 @@ private:
 	bool lost;
 
 	Point2f score;
+	Point2f prev_wnd_center;
 };

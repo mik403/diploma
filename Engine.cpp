@@ -51,15 +51,27 @@ void Engine::update() {
 		for (int i = 0; i < TRACKERS_N; ++i) {
 
 			if (!test_tracker[i].isLost()) {
-
-				cout << i << " score: " << test_tracker[i].getScore().x << " " << test_tracker[i].getScore().y << endl;
-				if (test_tracker[i].getScore().x > 2000 && test_tracker[i].getScore().x < 3000 &&
-					test_tracker[i].getScore().y < 1200) {
+				float score_ratio = test_tracker[i].getScore().y / abs(test_tracker[i].getScore().x);
+				
+				cout << i << " score: " << test_tracker[i].getScore().x << " " << test_tracker[i].getScore().y << " " <<score_ratio << endl;
+				
+				if (score_ratio > -0.05 && score_ratio < 0.05 && abs(test_tracker[i].getScore().x) > 30) {
+					
 					cout << endl << "SUCCES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
 					success_detection = true;
 
 
 				}
+				
+				
+				//if (test_tracker[i].getScore().x > 2000 && test_tracker[i].getScore().x < 3000 &&
+				//	test_tracker[i].getScore().y < 1200) {
+				//	
+				//	cout << endl << "SUCCES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+				//	success_detection = true;
+
+
+				//}
 
 			}
 
@@ -86,7 +98,6 @@ void Engine::update() {
 		line(rgbFrames, Point(0, rgbFrames.rows - 5), Point(rgbFrames.cols - 5, rgbFrames.rows - 5),
 			Scalar(0, 255, 255), 10);
 	}
-
 
 	//bool tracked_mask[TRACKERS_N];
 	//memset(&tracked_mask, false, TRACKERS_N);
@@ -145,8 +156,6 @@ void Engine::draw() {
 }
 
 void Engine::drawTrackers() {
-
-
 
 	for (int i = 0; i < TRACKERS_N; ++i) {
 		if (p_trackers[i].isTracked()) {

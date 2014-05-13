@@ -3,9 +3,6 @@
 #include <iostream>
 
 void ShiftTracker::init(Mat &image, Point2f start) {
-	float hranges[] = { 0, 180 };
-	const float* phranges = hranges;
-	int histSize = 256;
 	
 	//check boundaries first
 	if (start.y - 25 < 0 || start.y + 25 >= image.rows ||
@@ -14,13 +11,19 @@ void ShiftTracker::init(Mat &image, Point2f start) {
 		inited = false;
 		lost = true;
 		return;
-
 	}
-	
+
+	track_window = Rect(start.x - 25, start.y - 25, 50, 50);
+
+	prev_wnd_center.x = track_window.x;
+	prev_wnd_center.y = track_window.y;
+
 	roi = image(Range(start.y - 25, start.y + 25),
 		Range(start.x - 25, start.x + 25));
 
-	track_window = Rect(start.x - 25, start.y - 25, 50, 50);
+	float hranges[] = { 0, 180 };
+	const float* phranges = hranges;
+	int histSize = 256;
 
 	cvtColor(roi, hsv_roi, COLOR_BGR2HSV);
 
@@ -60,16 +63,18 @@ void ShiftTracker::update(Mat &frame) {
 
 	if (strange_number < 1) {
 		lost = true;
-	}
-	else {
+	} else {
 
 		rectangle(frame, track_window, Scalar(0, 255, 0), 2);
 		putText(frame, std::to_string(id), cvPoint(track_window.x + track_window.width / 2, track_window.y + track_window.height / 2), CV_FONT_HERSHEY_SIMPLEX, 1.0f, Scalar(0, 255, 0), 2);
 
 		lost = false;
 
-		score.x += track_window.x;
-		score.y += track_window.y;
+		score.x += track_window.x - prev_wnd_center.x;// no matter which side it is moving
+		score.y += track_window.y - prev_wnd_center.y;
+
+		prev_wnd_center.x = track_window.x;
+		prev_wnd_center.y = track_window.y;
 	}
 
 }
